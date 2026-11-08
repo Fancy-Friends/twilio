@@ -20,7 +20,7 @@ return [
 
     'credentials' => [
         // Account SID (per connected account).
-        'accountSid' => env('TWILIO_ACCOUNTSID'),
+        'accountSid' => env('TWILIO_ACCOUNT_SID', env('TWILIO_ACCOUNTSID')),
         // API key SID (or Account SID) (per connected account).
         'username' => env('TWILIO_USERNAME'),
         // API key secret (or Auth Token) (per connected account, secret).
@@ -31,7 +31,7 @@ return [
     // notification's message leaves out (e.g. the sender); the message wins.
     'notifications' => [
         'from' => env('TWILIO_FROM'),
-        'messagingServiceSid' => env('TWILIO_MESSAGINGSERVICESID'),
-        'statusCallback' => env('TWILIO_STATUSCALLBACK'),
+        'messagingServiceSid' => env('TWILIO_MESSAGING_SERVICE_SID', env('TWILIO_MESSAGINGSERVICESID')),
+        'statusCallback' => env('TWILIO_STATUS_CALLBACK', env('TWILIO_STATUSCALLBACK')),
     ],
 ];

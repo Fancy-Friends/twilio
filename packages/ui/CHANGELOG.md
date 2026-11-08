@@ -7,6 +7,21 @@ The four packages share one version, because they are generated from one
 `provider/` definition and a version that meant something different in each
 would be a version nobody could reason about.
 
+## [0.1.1] — 2026-11-08
+
+### Fixed
+
+- **The Laravel config's environment variable names now split camelCase**,
+  as documented. **Consumer action: none.** The old unsplit names are still
+  read as a fallback, so an app that set them keeps working; the new names
+  are preferred.
+
+  | Preferred | Still read |
+  |---|---|
+  | `TWILIO_ACCOUNT_SID` | `TWILIO_ACCOUNTSID` |
+  | `TWILIO_MESSAGING_SERVICE_SID` | `TWILIO_MESSAGINGSERVICESID` |
+  | `TWILIO_STATUS_CALLBACK` | `TWILIO_STATUSCALLBACK` |
+
 ## [0.1.0] — 2026-11-08
 
 ### Added
