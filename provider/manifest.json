@@ -4,6 +4,7 @@
   "service": "twilio",
   "title": "Twilio",
   "domain": "messaging",
+  "summary": "Send SMS with Twilio from a workflow or a Laravel app, and read a message's delivery status.",
   "docs": "https://www.twilio.com/docs/messaging/api/message-resource",
   "auth": "api_key",
   "requires": [
@@ -55,5 +56,49 @@
     "action": "message_send",
     "to": "to",
     "content": "body"
-  }
+  },
+  "$setupComment": "Every step read from twilio.com/docs on 2026-11-08 (each step cites its page). Not stated by those pages, so not claimed here: that the API key secret is shown only once, and the US carrier error code for unregistered 10DLC traffic.",
+  "setup": [
+    {
+      "title": "Find your Account SID",
+      "detail": "Sign in to the Twilio Console; the Account SID is on the Console home page. It is AC followed by 32 hex characters, and it is part of every URL this connector calls. A TRIAL account can only send to verified numbers (up to 5; your sign-up number is verified already), so upgrade before sending to anyone else.",
+      "url": "https://www.twilio.com/docs/usage/tutorials/how-to-use-your-free-trial-account",
+      "fields": [
+        "accountSid"
+      ]
+    },
+    {
+      "title": "Create a Standard API key for {{appName}}",
+      "detail": "Console: Settings, Account settings, API keys & auth tokens, then Create API key. Choose Standard: it reaches every API this connector uses, but not the Accounts or Keys resources, so it cannot create more keys if it leaks. Copy the key's SID into the username and its secret into the password, and store the secret immediately. Leave the region at the default unless your account uses another Twilio region: this connector calls api.twilio.com.",
+      "url": "https://www.twilio.com/docs/iam/api-keys/keys-in-console",
+      "copy": [
+        {
+          "label": "Friendly name",
+          "value": "{{appName}} ({{connector}})"
+        }
+      ],
+      "fields": [
+        "username",
+        "password"
+      ]
+    },
+    {
+      "title": "Give {{appName}} a sender",
+      "detail": "Either a Twilio phone number with SMS capability, or a Messaging Service (Console: Messaging, Services, Create Messaging Service, then add your numbers to its sender pool). message_send takes one of From or MessagingServiceSid; for Laravel notifications set TWILIO_FROM or TWILIO_MESSAGING_SERVICE_SID so a notification that names no sender still has one.",
+      "url": "https://www.twilio.com/docs/messaging/services"
+    },
+    {
+      "title": "Register for A2P 10DLC before texting US numbers",
+      "detail": "Anyone sending application SMS to the US from a 10-digit long code must register for A2P 10DLC, hobbyists included, and unregistered traffic incurs additional carrier fees. If the number only sends verification codes, Twilio Verify can be used instead of registering.",
+      "url": "https://www.twilio.com/docs/messaging/compliance/a2p-10dlc"
+    },
+    {
+      "title": "Send a test message and read it back",
+      "detail": "Send one SMS to a phone you can read, then read it back with message_get to see what Twilio did with it.",
+      "url": "https://www.twilio.com/docs/messaging/api/message-resource",
+      "actor": "agent",
+      "prompt": "Using {{appName}}'s {{connector}} connection, send one SMS with message_send to a phone the person can read (on a trial account, a verified number), then call message_get with the returned sid and report its status, error_code and error_message.",
+      "done": "message_get reports status sent or delivered with error_code null, and the person received the text."
+    }
+  ]
 }
