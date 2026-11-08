@@ -7,6 +7,24 @@ The four packages share one version, because they are generated from one
 `provider/` definition and a version that meant something different in each
 would be a version nobody could reason about.
 
+## [0.1.2] — 2026-11-08
+
+### Added
+
+- **Complete setup steps**, in SETUP.md (linked from the README) and in the
+  registry index for a host to render with fancy-connector-core's
+  `renderSetup`. They cover:
+  - the Account SID, and the trial account's verified-numbers limit;
+  - a Standard API key named for your app;
+  - a sender: a number or a Messaging Service, plus `TWILIO_FROM` /
+    `TWILIO_MESSAGING_SERVICE_SID` for notifications;
+  - US A2P 10DLC registration;
+  - a test send read back with `message_get`, an AGENT step.
+
+  Each step cites the Twilio page it was checked against on 2026-11-08, and
+  says which credentials it yields.
+- A one-line `summary`.
+
 ## [0.1.1] — 2026-11-08
 
 ### Fixed
