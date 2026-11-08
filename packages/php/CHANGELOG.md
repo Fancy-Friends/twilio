@@ -7,7 +7,7 @@ The four packages share one version, because they are generated from one
 `provider/` definition and a version that meant something different in each
 would be a version nobody could reason about.
 
-## [0.1.0] — 2026-11-15
+## [0.1.0] — 2026-11-08
 
 ### Added
 
@@ -18,3 +18,13 @@ would be a version nobody could reason about.
   or the Account SID and Auth Token. The Account SID is its own credential
   because it is also part of every URL.
 - **Fake mode** answers from the faker, so tests send nothing.
+- **A Laravel Notification channel**: `via(): ['twilio']` sends with
+  `message_send`. The recipient is the notifiable's `routeNotificationForTwilio()`;
+  `toTwilio($notifiable)` returns the body as a string, or `message_send`'s
+  config as an array. `config('connectors.twilio.notifications')` (from
+  `TWILIO_FROM`, `TWILIO_MESSAGINGSERVICESID`, `TWILIO_STATUSCALLBACK`) fills
+  what the message leaves out, typically the sender; the message wins. No route
+  means nothing is sent. `Twilio::fake()` covers notifications:
+  `Twilio::assertSent('message_send', ...)`.
+- Plus the Laravel layer every connector has: the service provider, the
+  `Twilio` facade, `Twilio::fake()` with `assertSent`, and its own Pest suite.

@@ -26,4 +26,12 @@ return [
         // API key secret (or Auth Token) (per connected account, secret).
         'password' => env('TWILIO_PASSWORD'),
     ],
+
+    // Notifications sent via(): ['twilio'] run message_send. These fill whatever the
+    // notification's message leaves out (e.g. the sender); the message wins.
+    'notifications' => [
+        'from' => env('TWILIO_FROM'),
+        'messagingServiceSid' => env('TWILIO_MESSAGINGSERVICESID'),
+        'statusCallback' => env('TWILIO_STATUSCALLBACK'),
+    ],
 ];

@@ -37,3 +37,91 @@ it('fakes message_get and records it for assertSent', function () {
     Twilio::assertNotSent('no_such_operation');
     Twilio::assertSentCount(1);
 });
+
+it('sends a notification through the twilio channel', function () {
+    TestApp::boot();
+    Twilio::fake();
+    $user = new class {
+        use Illuminate\Notifications\Notifiable;
+        public function routeNotificationForTwilio(): ?string { return '+14155550100'; }
+    };
+    $notification = new class extends Illuminate\Notifications\Notification {
+        public function via(object $notifiable): array { return ['twilio']; }
+        public function toTwilio(object $notifiable): string|array { return array_merge([
+        'from' => 'example-from',
+        'messagingServiceSid' => 'example-messagingServiceSid',
+        'statusCallback' => 'example-statusCallback',
+    ], ['body' => 'Your code is 123456']); }
+    };
+
+    $user->notify($notification);
+
+    Twilio::assertSent('message_send', fn (array $sent): bool => $sent['to'] === '+14155550100'
+        && $sent['body'] === 'Your code is 123456');
+    Twilio::assertSentCount(1);
+});
+
+it('sends a string message as body, filling the rest from config', function () {
+    $defaults = [
+        'from' => 'example-from',
+        'messagingServiceSid' => 'example-messagingServiceSid',
+        'statusCallback' => 'example-statusCallback',
+    ];
+    TestApp::boot(['connectors.twilio.notifications' => $defaults]);
+    Twilio::fake();
+    $user = new class {
+        use Illuminate\Notifications\Notifiable;
+        public function routeNotificationForTwilio(): ?string { return '+14155550100'; }
+    };
+    $notification = new class extends Illuminate\Notifications\Notification {
+        public function via(object $notifiable): array { return ['twilio']; }
+        public function toTwilio(object $notifiable): string|array { return 'Hello'; }
+    };
+
+    $user->notify($notification);
+
+    Twilio::assertSent('message_send', fn (array $sent): bool => $sent['body'] === 'Hello'
+        && array_intersect_key($sent, $defaults) == $defaults);
+});
+
+it('lets the message override a configured default', function () {
+    TestApp::boot(['connectors.twilio.notifications' => [
+        'from' => 'example-from',
+        'messagingServiceSid' => 'example-messagingServiceSid',
+        'statusCallback' => 'example-statusCallback',
+    ]]);
+    Twilio::fake();
+    $user = new class {
+        use Illuminate\Notifications\Notifiable;
+        public function routeNotificationForTwilio(): ?string { return '+14155550100'; }
+    };
+    $notification = new class extends Illuminate\Notifications\Notification {
+        public function via(object $notifiable): array { return ['twilio']; }
+        public function toTwilio(object $notifiable): string|array { return array_merge([
+        'from' => 'example-from',
+        'messagingServiceSid' => 'example-messagingServiceSid',
+        'statusCallback' => 'example-statusCallback',
+    ], ['body' => 'Hi', 'from' => 'from-the-message']); }
+    };
+
+    $user->notify($notification);
+
+    Twilio::assertSent('message_send', fn (array $sent): bool => $sent['from'] === 'from-the-message');
+});
+
+it('sends nothing when the notifiable has no route', function () {
+    TestApp::boot();
+    Twilio::fake();
+    $user = new class {
+        use Illuminate\Notifications\Notifiable;
+        public function routeNotificationForTwilio(): ?string { return null; }
+    };
+    $notification = new class extends Illuminate\Notifications\Notification {
+        public function via(object $notifiable): array { return ['twilio']; }
+        public function toTwilio(object $notifiable): string|array { return 'Hello'; }
+    };
+
+    $user->notify($notification);
+
+    Twilio::assertNothingSent();
+});

@@ -49,5 +49,11 @@
       "secret": true,
       "help": "The secret shown once when the API key was created, or the account's Auth Token. The Auth Token can do everything on the account; an API key can be revoked on its own."
     }
-  ]
+  ],
+  "notificationChannel": {
+    "$comment": "PS Mapper: a Laravel Notification sent with via(): ['twilio'] runs message_send. The notifiable's routeNotificationForTwilio() gives `to`; toTwilio() returns the body as a string, or message_send's config as an array (e.g. from, messagingServiceSid, statusCallback).",
+    "action": "message_send",
+    "to": "to",
+    "content": "body"
+  }
 }
