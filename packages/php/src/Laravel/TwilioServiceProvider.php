@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace ParticleAcademy\Twilio\Laravel;
 
+use ParticleAcademy\Twilio\Laravel\Notifications\TwilioChannel;
+use Illuminate\Notifications\ChannelManager;
 use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
 
@@ -32,5 +34,11 @@ final class TwilioServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__.'/../../config/twilio.php' => $this->app->configPath('connectors/twilio.php'),
         ], 'twilio-config');
+
+        // via(): ['twilio'] in a Notification. Registered whenever the notification
+        // system is resolved, so an app that never sends one pays nothing.
+        $this->callAfterResolving(ChannelManager::class, static function (ChannelManager $manager): void {
+            $manager->extend('twilio', static fn (): TwilioChannel => new TwilioChannel);
+        });
     }
 }

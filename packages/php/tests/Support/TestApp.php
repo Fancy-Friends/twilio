@@ -11,6 +11,8 @@ use Illuminate\Events\EventServiceProvider;
 use Illuminate\Filesystem\FilesystemServiceProvider;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
+use Illuminate\Bus\BusServiceProvider;
+use Illuminate\Notifications\NotificationServiceProvider;
 use Illuminate\Routing\RoutingServiceProvider;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Facade;
@@ -47,7 +49,7 @@ final class TestApp
         }
         $app->instance('config', $repository);
 
-        foreach ([EventServiceProvider::class, FilesystemServiceProvider::class, RoutingServiceProvider::class] as $base_provider) {
+        foreach ([EventServiceProvider::class, FilesystemServiceProvider::class, RoutingServiceProvider::class, BusServiceProvider::class, NotificationServiceProvider::class] as $base_provider) {
             $app->register($base_provider);
         }
         $app->register(TwilioServiceProvider::class);
