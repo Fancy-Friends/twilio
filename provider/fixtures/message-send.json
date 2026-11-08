@@ -1,0 +1,43 @@
+{
+  "$comment": "CreateMessage's 201: queued, not delivered. Price is null until Twilio knows it.",
+  "operation": "message_send",
+  "response": {
+    "sid": {
+      "$fake": "id",
+      "prefix": "SM"
+    },
+    "account_sid": {
+      "$fake": "id",
+      "prefix": "AC"
+    },
+    "status": "queued",
+    "to": {
+      "$config": "to",
+      "as": "string",
+      "fallback": "+14155550100"
+    },
+    "from": {
+      "$config": "from",
+      "as": "string",
+      "fallback": "+14155550199"
+    },
+    "body": {
+      "$config": "body",
+      "as": "string",
+      "fallback": "Your code is 123456"
+    },
+    "num_segments": "1",
+    "direction": "outbound-api",
+    "messaging_service_sid": {
+      "$config": "messagingServiceSid",
+      "as": "string",
+      "fallback": null
+    },
+    "error_code": null,
+    "error_message": null,
+    "date_created": "Sat, 08 Nov 2026 12:00:00 +0000",
+    "price": null,
+    "price_unit": "USD",
+    "api_version": "2010-04-01"
+  }
+}

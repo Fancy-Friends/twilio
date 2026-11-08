@@ -1,0 +1,114 @@
+{
+  "$comment": "FetchMessage -> GET /2010-04-01/Accounts/{AccountSid}/Messages/{Sid}.json, 200.",
+  "operation": "message_get",
+  "kind": "message_get",
+  "title": "Twilio message",
+  "description": "Read a message's current status, segments, price and error code.",
+  "summary": "read a message",
+  "docs": "https://www.twilio.com/docs/messaging/api/message-resource#fetch-a-message-resource",
+  "sideEffects": "none",
+  "request": {
+    "method": "GET",
+    "path": "/2010-04-01/Accounts/{AccountSid}/Messages/{Sid}.json"
+  },
+  "config": [
+    {
+      "type": "text",
+      "key": "sid",
+      "label": "Message SID",
+      "required": true,
+      "description": "From message_send's data.sid.",
+      "send": {
+        "in": "path",
+        "as": "Sid",
+        "value": "string"
+      }
+    }
+  ],
+  "outputShape": [
+    {
+      "path": "data.sid",
+      "type": "string",
+      "description": "The message SID (SM... or MM...)."
+    },
+    {
+      "path": "data.status",
+      "type": "string",
+      "description": "queued, sending, sent, delivered, undelivered, failed, scheduled, canceled, and others. A send answers `queued` or `accepted`, not delivered: delivery is reported later."
+    },
+    {
+      "path": "data.to",
+      "type": "string",
+      "description": "The recipient, E.164."
+    },
+    {
+      "path": "data.from",
+      "type": "string",
+      "description": "The sender. Null while a Messaging Service is still choosing one."
+    },
+    {
+      "path": "data.body",
+      "type": "string",
+      "description": "The text."
+    },
+    {
+      "path": "data.num_segments",
+      "type": "string",
+      "description": "How many SMS segments Twilio billed or will bill. A STRING in Twilio's schema."
+    },
+    {
+      "path": "data.messaging_service_sid",
+      "type": "string",
+      "description": "The Messaging Service used, if any."
+    },
+    {
+      "path": "data.error_code",
+      "type": "number",
+      "description": "Twilio's error code when the message failed, e.g. 21610 (the recipient replied STOP). Null otherwise."
+    },
+    {
+      "path": "data.error_message",
+      "type": "string",
+      "description": "Twilio's description of the error. Null otherwise."
+    },
+    {
+      "path": "data.date_created",
+      "type": "string",
+      "description": "RFC 2822 date."
+    },
+    {
+      "path": "data.price",
+      "type": "string",
+      "description": "The price, negative, once known. Null until then."
+    },
+    {
+      "path": "data.price_unit",
+      "type": "string",
+      "description": "ISO 4217 currency of `price`."
+    },
+    {
+      "path": "mode",
+      "type": "string",
+      "description": "Which estate this ran against: fake or live."
+    }
+  ],
+  "contract": {
+    "sends": [
+      "Sid"
+    ],
+    "reads": [
+      "sid",
+      "status",
+      "to",
+      "from",
+      "body",
+      "num_segments",
+      "messaging_service_sid",
+      "error_code",
+      "error_message",
+      "date_created",
+      "price",
+      "price_unit"
+    ]
+  }
+}

@@ -1,0 +1,172 @@
+{
+  "$comment": "CreateMessage -> POST /2010-04-01/Accounts/{AccountSid}/Messages.json, form encoded, 201. `To` is the only field the schema requires; a sender is `From` or `MessagingServiceSid`, and content is `Body`, `MediaUrl` or `ContentSid`. 0.1.0 sends text: Body is required here.",
+  "operation": "message_send",
+  "kind": "message_send",
+  "title": "Send an SMS with Twilio",
+  "description": "Send a text message.",
+  "summary": "send an SMS",
+  "docs": "https://www.twilio.com/docs/messaging/api/message-resource#create-a-message-resource",
+  "sideEffects": "unsafe-to-replay",
+  "$idempotencyComment": "CreateMessage takes no idempotency key. A retry after a timeout can text the person twice.",
+  "request": {
+    "method": "POST",
+    "path": "/2010-04-01/Accounts/{AccountSid}/Messages.json",
+    "encoding": "form"
+  },
+  "config": [
+    {
+      "type": "expression",
+      "key": "to",
+      "label": "To",
+      "required": true,
+      "example": "{{ $json.phone }}",
+      "description": "The recipient in E.164, e.g. +14155550100.",
+      "send": {
+        "as": "To",
+        "value": "string",
+        "transform": "trim"
+      }
+    },
+    {
+      "type": "text",
+      "key": "from",
+      "label": "From",
+      "description": "A Twilio number you own, in E.164, or an alphanumeric sender ID where the destination allows one. Give this or a Messaging Service.",
+      "send": {
+        "as": "From",
+        "value": "string",
+        "omitEmpty": true
+      }
+    },
+    {
+      "type": "text",
+      "key": "messagingServiceSid",
+      "label": "Messaging Service SID",
+      "description": "MG... A Messaging Service picks the sender from its pool. Give this or From.",
+      "send": {
+        "as": "MessagingServiceSid",
+        "value": "string",
+        "omitEmpty": true
+      }
+    },
+    {
+      "type": "textarea",
+      "key": "body",
+      "label": "Body",
+      "required": true,
+      "description": "The text. Up to 1,600 characters. A character outside GSM-7 makes the whole message UCS-2, which halves how much fits in each billed segment.",
+      "send": {
+        "as": "Body",
+        "value": "string"
+      }
+    },
+    {
+      "type": "text",
+      "key": "statusCallback",
+      "label": "Status callback URL",
+      "description": "Optional. Twilio POSTs delivery status changes here. Verifying those requests arrives in 0.2.0.",
+      "send": {
+        "as": "StatusCallback",
+        "value": "string",
+        "omitEmpty": true
+      }
+    }
+  ],
+  "requireOneOf": {
+    "keys": [
+      "from",
+      "messagingServiceSid"
+    ],
+    "error": "message_send needs a sender: From (a Twilio number) or a Messaging Service SID. Twilio refuses a message with neither."
+  },
+  "outputShape": [
+    {
+      "path": "data.sid",
+      "type": "string",
+      "description": "The message SID (SM... or MM...)."
+    },
+    {
+      "path": "data.status",
+      "type": "string",
+      "description": "queued, sending, sent, delivered, undelivered, failed, scheduled, canceled, and others. A send answers `queued` or `accepted`, not delivered: delivery is reported later."
+    },
+    {
+      "path": "data.to",
+      "type": "string",
+      "description": "The recipient, E.164."
+    },
+    {
+      "path": "data.from",
+      "type": "string",
+      "description": "The sender. Null while a Messaging Service is still choosing one."
+    },
+    {
+      "path": "data.body",
+      "type": "string",
+      "description": "The text."
+    },
+    {
+      "path": "data.num_segments",
+      "type": "string",
+      "description": "How many SMS segments Twilio billed or will bill. A STRING in Twilio's schema."
+    },
+    {
+      "path": "data.messaging_service_sid",
+      "type": "string",
+      "description": "The Messaging Service used, if any."
+    },
+    {
+      "path": "data.error_code",
+      "type": "number",
+      "description": "Twilio's error code when the message failed, e.g. 21610 (the recipient replied STOP). Null otherwise."
+    },
+    {
+      "path": "data.error_message",
+      "type": "string",
+      "description": "Twilio's description of the error. Null otherwise."
+    },
+    {
+      "path": "data.date_created",
+      "type": "string",
+      "description": "RFC 2822 date."
+    },
+    {
+      "path": "data.price",
+      "type": "string",
+      "description": "The price, negative, once known. Null until then."
+    },
+    {
+      "path": "data.price_unit",
+      "type": "string",
+      "description": "ISO 4217 currency of `price`."
+    },
+    {
+      "path": "mode",
+      "type": "string",
+      "description": "Which estate this ran against: fake or live."
+    }
+  ],
+  "contract": {
+    "sends": [
+      "To",
+      "From",
+      "MessagingServiceSid",
+      "Body",
+      "StatusCallback"
+    ],
+    "reads": [
+      "sid",
+      "status",
+      "to",
+      "from",
+      "body",
+      "num_segments",
+      "messaging_service_sid",
+      "error_code",
+      "error_message",
+      "date_created",
+      "price",
+      "price_unit"
+    ]
+  }
+}

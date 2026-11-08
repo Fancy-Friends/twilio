@@ -1,0 +1,53 @@
+{
+  "$comment": "THE hand-written part. Four packages -- ui, js, php, py -- are generated from this directory and are never edited. Facts read from Twilio's own OpenAPI (github.com/twilio/twilio-oai, spec/json/twilio_api_v2010.json) on 2026-11-08.",
+  "connectorApi": 1,
+  "service": "twilio",
+  "title": "Twilio",
+  "domain": "messaging",
+  "docs": "https://www.twilio.com/docs/messaging/api/message-resource",
+  "auth": "api_key",
+  "requires": [
+    "accountSid",
+    "username",
+    "password"
+  ],
+  "authorize": {
+    "kind": "basic",
+    "credential": "username",
+    "secretCredential": "password",
+    "pathCredentials": {
+      "AccountSid": "accountSid"
+    },
+    "$comment": "HTTP basic, two parts: an API key SID and its secret (recommended), or the Account SID and its Auth Token. Either way the ACCOUNT SID is also a path segment of every URL (/2010-04-01/Accounts/{AccountSid}/...), which is why it is its own credential rather than read out of the username: with an API key the two differ."
+  },
+  "sandbox": "credential",
+  "baseUrls": {
+    "live": "https://api.twilio.com",
+    "sandbox": "https://api.twilio.com"
+  },
+  "sandboxNote": "Twilio's test estate is selected by the CREDENTIALS, not the URL: a separate test Account SID and test Auth Token (Console -> API keys & tokens), against the same api.twilio.com. A live key on a node marked sandbox texts a real phone and is billed. With test credentials only message_send works -- every other resource, including message_get, answers 403 -- nothing is sent or charged, no status callback fires, and From must be Twilio's magic +15005550006 (+15005550004 as To returns 21610, the STOP case). Test credentials are the test Account SID and Auth Token, not an API key.",
+  "encoding": "form",
+  "credentialFields": [
+    {
+      "key": "accountSid",
+      "label": "Account SID",
+      "scope": "account",
+      "secret": false,
+      "help": "AC followed by 32 hex characters, from the Twilio Console. It is part of every request URL."
+    },
+    {
+      "key": "username",
+      "label": "API key SID (or Account SID)",
+      "scope": "account",
+      "secret": false,
+      "help": "An API key SID from the Twilio Console (API keys & tokens), recommended. Or the Account SID again, to authenticate with the Auth Token."
+    },
+    {
+      "key": "password",
+      "label": "API key secret (or Auth Token)",
+      "scope": "account",
+      "secret": true,
+      "help": "The secret shown once when the API key was created, or the account's Auth Token. The Auth Token can do everything on the account; an API key can be revoked on its own."
+    }
+  ]
+}
